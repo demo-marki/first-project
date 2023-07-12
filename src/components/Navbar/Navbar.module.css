@@ -1,0 +1,19 @@
+.nav {
+    grid-area: n;
+    background-color: white;
+    padding: 10px;
+}
+
+.item{
+    color: #9a9fbf;
+    text-decoration: none;
+    font-family: Roboto,-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.active {
+    color: #ff5e3a;
+    text-decoration: none;
+}

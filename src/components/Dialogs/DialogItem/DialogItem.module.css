@@ -1,0 +1,16 @@
+.active {
+    color: gold;
+    text-decoration: none;
+}
+
+.item{
+    font-family: Roboto,-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    text-decoration: none;
+}
+
+.dialog {
+    border-style: solid;
+    border-width: 0px 0px 1px 0px;
+    border-color: #e6ecf5;
+    padding: 10px;
+}
