@@ -1,25 +1,31 @@
 import React from "react";
 import Users from "./Users";
 import {
-    follow,
-    setCurrentPage,
     setFollowingInProgress,
-    unfollow, getUsersThunkCreator, unfollowThunkCreator, followThunkCreator
+    getUsersThunkCreator, unfollowThunkCreator, followThunkCreator
 } from "../../redux/users-reducer";
 import {connect} from "react-redux";
 import Preloader from "../../components/common/Preloader/Preloader"
-import {withAuthRedirect} from "../../hoc/withAuthRedirect";
 import {compose} from "redux";
+import {
+    getCurrentPage,
+    getFollowingInProgress,
+    getIsFetching,
+    getPageSize,
+    getTotalUsersCount,
+    getUsers
+} from "../../redux/users-selector";
 
 class UsersContainer extends React.Component {
 
     componentDidMount() {
-        this.props.getUsersThunkCreator(this.props.currentPage, this.props.pageSize)
+        const {currentPage, pageSize} = this.props;
+        this.props.getUsersThunkCreator(currentPage, pageSize)
     }
 
     onPageChanged = (pageNumber) => {
-        this.props.setCurrentPage(pageNumber);
-        this.props.getUsersThunkCreator(pageNumber, this.props.pageSize)
+        const {pageSize} = this.props;
+        this.props.getUsersThunkCreator(pageNumber, pageSize)
     }
 
     render = () => {
@@ -40,18 +46,18 @@ class UsersContainer extends React.Component {
 
 let mapStateToProps = (state) => {
     return {
-        users: state.usersPage.users,
-        pageSize: state.usersPage.pageSize,
-        totalUsersCount: state.usersPage.totalUsersCount,
-        currentPage: state.usersPage.currentPage,
-        isFetching: state.usersPage.isFetching,
-        followingInProgress: state.usersPage.followingInProgress
+        users: getUsers(state),
+        pageSize: getPageSize(state),
+        totalUsersCount: getTotalUsersCount(state),
+        currentPage: getCurrentPage(state),
+        isFetching: getIsFetching(state),
+        followingInProgress: getFollowingInProgress(state)
     }
 }
 
 export default compose(
-    withAuthRedirect,
+    //withAuthRedirect,
     connect(mapStateToProps,
-    {setCurrentPage, setFollowingInProgress,
+    {setFollowingInProgress,
         getUsersThunkCreator, unfollowThunkCreator, followThunkCreator})
     )(UsersContainer);

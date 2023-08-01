@@ -1,4 +1,4 @@
-import {sendMessageActionCreator, updateNewMessageTextActionCreator} from "../../redux/dialogs-reducer";
+import {sendMessageActionCreator} from "../../redux/dialogs-reducer";
 import Dialogs from "./Dialogs";
 import {connect} from "react-redux";
 import React from "react";
@@ -11,18 +11,7 @@ let mapStateToProps = (state) => {
     }
 }
 
-let mapDispatchToProps = (dispatch) => {
-    return {
-        sendMessage: () => {
-            dispatch(sendMessageActionCreator())
-        },
-        updateMewMessageText: (text) => {
-            dispatch(updateNewMessageTextActionCreator(text));
-        }
-    }
-}
-
 export default compose(
-    connect(mapStateToProps, mapDispatchToProps),
+    connect(mapStateToProps, {sendMessage: sendMessageActionCreator}),
     withAuthRedirect
 )(Dialogs);

@@ -1,9 +1,9 @@
 import {profileAPI} from "../api/api";
 
 const ADD_POST = 'ADD-POST';
-const UPDATE_NEW_POST_TEXT = 'UPDATE-NEW-POST-TEXT';
 const SET_USER_PROFILE = 'SET_USER_PROFILE';
 const SET_STATUS = 'SET_STATUS';
+const DELETE_POST = 'DELETE_POST';
 
 let initialState = {
     posts: [
@@ -13,7 +13,6 @@ let initialState = {
         {id: 4, message: 'Как писать на стене друга или другого пользователя?', likesCount: 5},
         {id: 5, message: 'Что такое стена в ВК?', likesCount: 7}
     ],
-    newPostText: '1 Труляля',
     profile: null,
     id: null,
     status: ''
@@ -24,18 +23,13 @@ const profileReducer = (state = initialState, action) => {
         case ADD_POST:
             let newPost = {
                 id: 5,
-                message: state.newPostText,
+                message: action.text,
                 likesCount: 0
             }
             return {
                 ...state,
                 posts: [...state.posts, newPost],
                 newPostText: ''
-            };
-        case UPDATE_NEW_POST_TEXT:
-            return {
-                ...state,
-                newPostText: action.newText
             };
         case SET_USER_PROFILE:
             return {
@@ -48,6 +42,12 @@ const profileReducer = (state = initialState, action) => {
                 ...state,
                 status: action.status
             }
+        case DELETE_POST:
+            return {
+                ...state,
+                posts: state.posts.filter(p => p.id != action.postId)
+
+            }
         default:
             return state;
     }
@@ -55,36 +55,24 @@ const profileReducer = (state = initialState, action) => {
 
 export default profileReducer;
 
-export const addPostActionCreator = () => ({type: ADD_POST});
-export const updateNewPostTextActionCreator = (text) => ({
-    type: UPDATE_NEW_POST_TEXT,
-    newText: text
-});
+export const addPostActionCreator = (text) => ({type: ADD_POST, text});
 export const setUserProfile = (profile) => ({type: SET_USER_PROFILE, profile})
 export const setUserStatus = (status) => ({type: SET_STATUS, status})
+export const deletePost = (postId) => ({type: DELETE_POST, postId})
 
-export const getUserProfile = (userId) => {
-    return (dispatch) => {
-        profileAPI.getProfile(userId).then(response => {
-            dispatch(setUserProfile(response));
-        });
-    }
+export const getUserProfile = (userId) => async (dispatch) => {
+    let response = await profileAPI.getProfile(userId);
+    dispatch(setUserProfile(response));
 }
 
-export const getStatus = (userId) => {
-    return (dispatch) => {
-        profileAPI.getStatus(userId).then(response => {
-            dispatch(setUserStatus(response));
-        });
-    }
+export const getStatus = (userId) => async (dispatch) => {
+    let response = await profileAPI.getStatus(userId);
+    dispatch(setUserStatus(response));
 }
 
-export const updateStatus = (status) => {
-    return (dispatch) => {
-        profileAPI.updateStatus(status).then(response => {
-            if (response.resultCode ===0){
-                dispatch(setUserStatus(status));
-            }
-        });
+export const updateStatus = (status) => async (dispatch) => {
+    let response = await profileAPI.updateStatus(status);
+    if (response.resultCode === 0) {
+        dispatch(setUserStatus(status));
     }
 }

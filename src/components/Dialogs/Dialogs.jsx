@@ -1,7 +1,42 @@
 import css from './Dialogs.module.css'
 import DialogItem from "./DialogItem/DialogItem";
 import Message from "./Message/Message";
-import {Navigate} from "react-router-dom";
+import {Field, Form, Formik} from "formik";
+import * as Yup from "yup";
+import {TextArea} from "../common/FormsControl/FormsControl";
+
+const SignupSchema = Yup.object().shape({
+    newMessageBody: Yup.string()
+        .max(150, 'Сообщение не должно превышать 150 символов')
+        .required('Поле должно быть заполнено!'),
+});
+
+const AddMessageForm = (props) => {
+    const submit = (values) => {
+        props.onSubmitAction(values.newMessageBody);
+    };
+
+    return (
+        <Formik
+            initialValues={{newMessageBody: props.newMessage}}
+            validationSchema={SignupSchema}
+            onSubmit={submit}>
+            {({errors, touched}) => (
+                <Form>
+                    <div>
+                        <Field as={TextArea}
+                               error={errors.newMessageBody}
+                               touched={touched.newMessageBody}
+                               name="newMessageBody"
+                               placeholder='Введите свое сообщение'/>
+                    </div>
+                    <div>
+                        <button type={"submit"}>Send</button>
+                    </div>
+                </Form>
+            )}
+        </Formik>)
+}
 
 const Dialogs = (props) => {
 
@@ -13,12 +48,8 @@ const Dialogs = (props) => {
         m => (<Message message={m.message}/>)
     )
 
-    let onSendMessageClick = () => {
-        props.sendMessage()
-    }
-    let onMewMessageChange = (e) => {
-        let text = e.target.value;
-        props.updateMewMessageText(text);
+    let onSendMessageClick = (text) => {
+        props.sendMessage(text)
     }
 
     return (
@@ -28,14 +59,8 @@ const Dialogs = (props) => {
             </div>
             <div className={css.messages}>
                 <div>{messageElements}</div>
-                <div>
-                    <div><textarea value={props.dialogsPage.newMessageText}
-                                   onChange={onMewMessageChange}
-                                   placeholder='Введите свое сообщение'/></div>
-                    <div>
-                        <button onClick={onSendMessageClick}>Send</button>
-                    </div>
-                </div>
+                <AddMessageForm newMessage={props.dialogsPage.newMessageText}
+                                onSubmitAction={onSendMessageClick}/>
             </div>
         </div>
     )

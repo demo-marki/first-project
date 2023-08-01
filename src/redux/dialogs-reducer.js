@@ -1,5 +1,4 @@
 const SEND_MESSAGE = 'SEND-MESSAGE';
-const UPDATE_NEW_MESSAGE_TEXT = 'UPDATE-NEW-MESSAGE-TEXT';
 
 let initialState = {
     dialogs: [
@@ -15,26 +14,19 @@ let initialState = {
         {id: 3, message: 'Как писать на своей стене?'},
         {id: 4, message: 'Как писать на стене друга или другого пользователя?'},
         {id: 5, message: 'Что такое стена в ВК?'}
-    ],
-    newMessageText: ''
+    ]
 }
 
 const dialogsReducer = (state = initialState, action) => {
     switch (action.type) {
-        case UPDATE_NEW_MESSAGE_TEXT:
-            return {
-                ...state,
-                newMessageText: action.newText
-            };
         case SEND_MESSAGE:
             let newMessage = {
                 id: 6,
-                message: state.newMessageText
+                message: action.text
             }
             return  {
                 ...state,
-                messages: [...state.messages, newMessage],
-                newMessageText: ''
+                messages: [...state.messages, newMessage]
             };
         default:
             return state;
@@ -43,9 +35,7 @@ const dialogsReducer = (state = initialState, action) => {
 
 export default dialogsReducer;
 
-export const sendMessageActionCreator = () => ({type: SEND_MESSAGE});
-
-export const updateNewMessageTextActionCreator = (text) => ({
-    type: UPDATE_NEW_MESSAGE_TEXT,
-    newText: text
+export const sendMessageActionCreator = (text) => ({
+    type: SEND_MESSAGE,
+    text: text
 });
