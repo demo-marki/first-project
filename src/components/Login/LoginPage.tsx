@@ -2,11 +2,12 @@ import css from './Login.module.css'
 import {Form, Formik, FormikProps} from "formik";
 import {CreateField, GetStringKeys, Input} from "../common/FormsControl/FormsControl.tsx";
 import * as Yup from "yup";
-import {connect} from "react-redux";
+import {connect, useDispatch, useSelector} from "react-redux";
 import {login} from "../../redux/auth-reducer.ts";
 import {Navigate} from "react-router-dom";
 import style from "../common/FormsControl/FormControl.module.css"
-import {AppStateType} from "../../redux/redux-store";
+import {AppStateType, TypedDispatch, useTypedDispatch} from "../../redux/redux-store";
+import {AnyAction} from "redux";
 
 const SignupSchema = Yup.object().shape({
     email: Yup.string()
@@ -63,15 +64,6 @@ const LoginForm: React.FC<FormikProps<LoginFormValues> & LoginFormOwnProps> = (p
     )
 }
 
-type MapStatePropsType = {
-    isAuth: boolean
-    captchaUrl: string | null
-}
-
-type MapDispatchPropsType = {
-    login: (email: string, password: string, rememberMe: boolean, captcha, setStatus) => void
-}
-
 interface LoginFormValues {
     email: string
     password: string
@@ -81,26 +73,25 @@ interface LoginFormValues {
 
 type LoginFormValuesTypeKeys = GetStringKeys<LoginFormValues>
 
-const Login: React.FC<MapStatePropsType & MapDispatchPropsType> = (props) => {
+export const LoginPage: React.FC = () => {
+
+    const captchaUrl = useSelector( (state: AppStateType) => state.auth.captchaUrl)
+    const isAuth = useSelector((state: AppStateType) => state.auth.isAuth)
+
+    const dispatch = useDispatch()
+
     const onSubmit = (formData: any, setStatus: any) => {
-        props.login(formData.email, formData.password, formData.rememberMe, formData.captcha, setStatus);
+        dispatch(login(formData.email, formData.password, formData.rememberMe, formData.captcha, setStatus) as AnyAction);
     }
 
-    if (props.isAuth) {
+    if (isAuth) {
         return <Navigate to={"/profile"} />
     }
 
     return (
         <div>
             <h1>Login</h1>
-            <LoginForm onSubmitAction={onSubmit} captchaUrl={props.captchaUrl}/>
+            <LoginForm onSubmitAction={onSubmit} captchaUrl={captchaUrl}/>
         </div>
     )
 }
-
-let mapStateToProps = (state: AppStateType): MapStatePropsType => ({
-    isAuth: state.auth.isAuth,
-    captchaUrl: state.auth.captchaUrl
-});
-
-export default connect(mapStateToProps, {login})(Login);
